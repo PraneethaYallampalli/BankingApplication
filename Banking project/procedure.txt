@@ -1,0 +1,32 @@
+CREATE TABLE account (
+    num NUMBER(6) UNIQUE,
+    name VARCHAR2(20),
+    balance NUMBER(10)
+);
+
+
+
+
+
+
+CREATE OR REPLACE PROCEDURE withdraw_funds(
+    p_anum IN NUMBER,
+    p_amt IN NUMBER,
+    p_success OUT NUMBER
+)
+IS
+    v_balance NUMBER;
+BEGIN
+    SELECT balance INTO v_balance FROM account WHERE num = p_anum;
+
+    IF p_amt <= v_balance THEN
+        UPDATE account SET balance = balance - p_amt WHERE num = p_anum;
+        p_success := 1; -- Success
+    ELSE
+        p_success := 0; -- Insufficient balance
+    END IF;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        p_success := -1; -- Invalid account number
+END;
+/
